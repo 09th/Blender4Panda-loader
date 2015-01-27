@@ -17,6 +17,8 @@ from ext import extensions
 # Корректировка путей и копирование изображений если это не текстуры
 # Разобраться с параметрами прожектора
 # Recalc camera aspect ratio on window change
+# Убрать в YABEE ненужную дубликацию сцены, если нет модификаторов или соотв. галки
+# Что за нафиг с двумя объектами с одинаковым материалом при использовании функции? Что-то опять с селектом?
 
 class Scene():
     
@@ -35,7 +37,7 @@ class Scene():
         self.path_dict = {'sounds':'./res',
                          'meshes':'./res',
                          'images':'./res',
-                         'shaders':'./res'
+                         'materials':'./res'
                           }
         if path_dict:
             self.path_dict.update(path_dict)

@@ -25,8 +25,8 @@ def unf_update_task2(scene, geom, idx, unf):
 
 def invoke(scene, material, action):
     if action == 'LOAD':
-        vert = os.path.join(scene.path_dict['shaders'], material['vert'])
-        frag =os.path.join(scene.path_dict['shaders'], material['frag'])
+        vert = os.path.join(scene.path_dict['materials'], material['vert'])
+        frag =os.path.join(scene.path_dict['materials'], material['frag'])
         sha = Shader.load(Shader.SL_GLSL, vert, frag)
         # Walk through all geometry, check for appropriate materials and
         # apply shaders
@@ -35,7 +35,7 @@ def invoke(scene, material, action):
             for i in xrange(geom_node.getNumGeoms()):
                 gs = geom_node.getGeomState(i)
                 m_att = gs.getAttrib(MaterialAttrib)
-                if m_att.getMaterial().getName() == material['name']:
+                if m_att and m_att.getMaterial().getName() == material['name']:
                     s_att = ShaderAttrib.make(sha)
                     for unf in material['uniforms']:
                         get_unf_res = get_uniform(scene, unf)
