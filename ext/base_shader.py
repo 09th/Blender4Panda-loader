@@ -35,6 +35,8 @@ def invoke(scene, material, action):
             for i in xrange(geom_node.getNumGeoms()):
                 gs = geom_node.getGeomState(i)
                 m_att = gs.getAttrib(MaterialAttrib)
+                if not m_att:
+                    print('WARNING:SHADER: %s(geom %i) has not assigned any materials' % (str(geom_node), i))
                 if m_att and m_att.getMaterial().getName() == material['name']:
                     s_att = ShaderAttrib.make(sha)
                     for unf in material['uniforms']:

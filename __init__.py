@@ -15,10 +15,8 @@ from ext import extensions
 # change order behaviour to be able to invoke extension before or after loading some objects
 # Анализ шейдера на недокументированные входящие переменные
 # Корректировка путей и копирование изображений если это не текстуры
-# Разобраться с параметрами прожектора
 # Recalc camera aspect ratio on window change
 # Убрать в YABEE ненужную дубликацию сцены, если нет модификаторов или соотв. галки
-# Что за нафиг с двумя объектами с одинаковым материалом при использовании функции? Что-то опять с селектом?
 
 class Scene():
     
