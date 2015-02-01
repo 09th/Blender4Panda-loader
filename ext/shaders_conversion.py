@@ -367,31 +367,35 @@ def get_uniform(scene, unf):
                 12: sampler_2dbuffer,
                 13: sampler_2dimage,
                 14: sampler_2dshadow,
-                16: lamp_distance,
-                19: spot_params,
+                #16: lamp_distance,
+                'distance': lamp_distance,
+                #19: spot_params,
+                'spot_cutoff': spot_params,
+                'spot_blend': spot_params,
                 'unsupported': unknown_data
                 }
-                
-    name = str(unf['varname'])
-    glsl_type = unf_datatype[unf['datatype']]
-    if unf['type'] in unf_type:
-        val = unf_type[unf['type']](scene, unf)
-    else:
-        val = unf_type['unsupported'](scene, unf)
-    if unf['type'] in (12, 13, 14): 
-        # For textures Blender by some reason sets type to int 
-        # we need to avoid this
-        return name, val
-    if unf['datatype']== 5 and len(val) < 4:
-        # Sometimes Blender want Vec4 for shader but give Vec3
-        val = (val[0], val[1], val[2], 1.0)
-    if unf['datatype']== 4 and len(val) > 3:
-        # and vice versa
-        val = val[:3]
     try:
+        name = str(unf['varname'])
+        val = 0
+        glsl_type = unf_datatype[unf['datatype']]
+        if unf['type'] in unf_type:
+            val = unf_type[unf['type']](scene, unf)
+        else:
+            val = unf_type['unsupported'](scene, unf)
+        if unf['type'] in (12, 13, 14): 
+            # For textures Blender by some reason sets type to int 
+            # we need to avoid this
+            return name, val
+        if unf['datatype']== 5 and len(val) < 4:
+            # Sometimes Blender want Vec4 for shader but give Vec3
+            val = (val[0], val[1], val[2], 1.0)
+        if unf['datatype']== 4 and len(val) > 3:
+            # and vice versa
+            val = val[:3]
+    
         return name, glsl_type(val)
     except Exception as exc:
-        print '--> ERROR in uniform type:', name, val
+        print '--> ERROR while getting uniform:', name, val
         raise exc
 
 #p3d_MultiTexCoord0

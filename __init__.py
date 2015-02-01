@@ -17,6 +17,7 @@ from ext import extensions
 # Корректировка путей и копирование изображений если это не текстуры
 # Recalc camera aspect ratio on window change
 # Убрать в YABEE ненужную дубликацию сцены, если нет модификаторов или соотв. галки
+# single_geom_mode сделать проверку на ассеты
 
 class Scene():
     
