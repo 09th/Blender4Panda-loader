@@ -33,10 +33,10 @@ class Scene():
         self.root = root
         self.loader = loader
         self.show_base = show_base
-        self.path_dict = {'sounds':'./res',
-                         'meshes':'./res',
-                         'images':'./res',
-                         'materials':'./res'
+        self.path_dict = {'sounds':'res',
+                         'meshes':'res',
+                         'images':'res',
+                         'materials':'res'
                           }
         if path_dict:
             self.path_dict.update(path_dict)
@@ -87,6 +87,7 @@ class Scene():
     
     
     def load(self, fname):
+        self.jsd_file = fname
         f = open(fname, 'r')
         data_dict = json.loads(f.read())
         f.close()

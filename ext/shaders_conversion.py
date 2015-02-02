@@ -1,7 +1,7 @@
 # -*- coding: utf_8 -*-
 #from panda3d.core import LVector2f, LVector3f, LVector4f, LMatrix3f, LMatrix4f
 from panda3d.core import *
-import math
+import math, os
 # Descriptions from  http://www.blender.org/api/blender_python_api_2_72_release/gpu.html
 '''
 gpu.GPU_DATA_1I
@@ -295,7 +295,7 @@ def lamp_dyncol(scene, unf):
 def sampler_2dbuffer(scene, unf):
     # type 12 (GPU_DYNAMIC_SAMPLER_2DBUFFER)
     if unf['texpixels'] not in scene.textures:
-        f = open(unf['texpixels'], 'rb')
+        f = open(os.path.join(scene.path_dict['images'], unf['texpixels']), 'rb')
         tex = bytearray(f.read())
         f.close()
 
@@ -314,7 +314,7 @@ def sampler_2dbuffer(scene, unf):
 def sampler_2dimage(scene, unf):
     # type 13
     if unf['image'] not in scene.textures:
-        texture = scene.loader.loadTexture(unf['image'])
+        texture = scene.loader.loadTexture(os.path.join(scene.path_dict['images'], unf['image']))
         scene.textures[unf['image']] = texture
     return texture
 
