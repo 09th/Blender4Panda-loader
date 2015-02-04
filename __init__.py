@@ -21,7 +21,7 @@ from ext import extensions
 
 class Scene():
     
-    def __init__(self, root=render, loader=loader, show_base=base, path_dict = None):
+    def __init__(self, root, loader, show_base):
         ''' Main scene class
         @param root: root node for the scene
         @param loader: models loader
@@ -38,8 +38,6 @@ class Scene():
                          'images':'res',
                          'materials':'res'
                           }
-        if path_dict:
-            self.path_dict.update(path_dict)
         # Raw data, which should loaded from JSON file
         self.data_dict = {'objects':{},
                          'assets':{},
