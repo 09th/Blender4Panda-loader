@@ -54,6 +54,8 @@ class Scene():
         self.cameras = {}
         self.textures = {}
         self.temp_static_obj_list = {}
+        
+        self._current_cam_number = 0
 
     
     
@@ -93,16 +95,25 @@ class Scene():
         f.close()
         self.data_dict = data_dict
         self.pass_through_ext('LOAD')
-        if self.cameras:
-            self.show_base.disableMouse()
-            first_cam = self.cameras.values()[0]
-            self.show_base.camera.setMat(first_cam.getMat())
-            self.show_base.cam.node().setLens(first_cam.node().getLens())
     
     def switch_camera(self, camera = None):
-        #TODO
-        pass
+        if self.cameras:
+            if camera:
+                if type(camera) == int:
+                    t_cam = self.cameras.values()[camera]
+                else:
+                    t_cam = self.cameras[camera]
+            else:
+                self._current_cam_number += 1
+                if self._current_cam_number >= len(self.cameras):
+                    self._current_cam_number = 0
+                t_cam = self.cameras.values()[self._current_cam_number]
+
+            self.show_base.disableMouse()                
+            self.show_base.camera.setMat(t_cam.getMat())
+            self.show_base.cam.node().setLens(t_cam.node().getLens())
         
+    
     def debug(self, frustum = True, light_pos = True, buffers = False):
         z = loader.loadModel('zup-axis')
         z.flattenStrong()
