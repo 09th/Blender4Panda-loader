@@ -12,9 +12,6 @@ from ext import extensions
 
 # TODO:
 # (?)Provide information about objects and parameters which processed by extension
-# change order behaviour to be able to invoke extension before or after loading some objects
-# Анализ шейдера на недокументированные входящие переменные
-# Корректировка путей и копирование изображений если это не текстуры
 # Recalc camera aspect ratio on window change
 # Убрать в YABEE ненужную дубликацию сцены, если нет модификаторов или соотв. галки
 # single_geom_mode сделать проверку на ассеты
@@ -58,6 +55,7 @@ class Scene():
     
     
     def pass_through_ext(self, action):
+
         for ext in extensions:
             if ext.target == 'prepare':
                 ext.invoke(self, action)
@@ -65,22 +63,18 @@ class Scene():
         for ext in extensions:
             if ext.target == 'scene':
                 ext.invoke(self, self.data_dict['scene'], action)
-        
-        for asset in self.data_dict['assets'].values():
-            for ext in extensions:
-                if ext.target == 'asset':
+            elif ext.target == 'asset':
+                for asset in self.data_dict['assets'].values():
                     ex.invoke(self, asset, action)
-        
-        for obj in self.data_dict['objects'].values():
-            for ext in extensions:
-                if ext.target == 'object':
+            elif ext.target == 'object':
+                for obj in self.data_dict['objects'].values():
                     ext.invoke(self, obj, action)
-                    
-        for material in self.data_dict['materials'].values():
-            for ext in extensions:
-                if ext.target == 'material':
+            elif ext.target == 'material':
+                for material in self.data_dict['materials'].values():
                     ext.invoke(self, material, action)
-        
+            elif ext.target not in ('prepare', 'finishing'):
+                print 'ERROR:EXTENSION: unknown target "%s"' % ext.target
+
         for ext in extensions:
             if ext.target == 'finishing':
                 ext.invoke(self, action)
@@ -93,6 +87,9 @@ class Scene():
         f.close()
         self.data_dict = data_dict
         self.pass_through_ext('LOAD')
+    
+    def unload(self):
+        self.pass_through_ext('UNLOAD')
     
     def switch_camera(self, camera = None):
         if self.cameras:
