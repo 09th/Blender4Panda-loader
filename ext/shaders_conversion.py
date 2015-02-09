@@ -341,7 +341,7 @@ def unknown_data(scene, unf):
 
 def get_uniform(scene, unf):
     
-    if unf['type'] == 'p3d_texture':
+    if unf['type'] == '_ignore_':
         return None # Panda does it automatically
     
     unf_datatype =  { 1: int,
