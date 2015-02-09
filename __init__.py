@@ -51,7 +51,7 @@ class Scene():
         self.sounds = {}
         self.cameras = {}
         self.textures = {}
-        self.temp_static_obj_list = {}
+        self.meshes = {}
         
         self._current_cam_number = 0
 

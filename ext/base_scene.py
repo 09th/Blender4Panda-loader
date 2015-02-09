@@ -14,12 +14,11 @@ def invoke(scene, data, action):
         for path in scene.path_dict:
             scene.path_dict[path] = os.path.join(scene_path, scene.path_dict[path]).replace('\\','/')
         getModelPath().appendPath(scene.path_dict['meshes'])
-        #print('+++',getModelPath())
         if 'scene_mesh' in data:
             path = os.path.join(scene.path_dict['meshes'], data['scene_mesh'])
             model = scene.loader.loadModel(path)
             model.reparent_to(scene.root)
-            scene.static_geom = model
+            scene.mesh = model
         else:
-            scene.static_geom = NodePath('static_geom')
-            scene.static_geom.reparentTo(scene.root)
+            scene.mesh = NodePath('scene_mesh')
+            scene.mesh.reparentTo(scene.root)

@@ -42,12 +42,15 @@ def make_shadow_cam(scene, obj):
 def invoke(scene, obj, action):
     if action == 'LOAD':
         if obj['type'] == 'MESH':
-            path = os.path.join(scene.path_dict['meshes'], obj['name'])
-            #model = scene.loader.loadModel(scene.path_dict['meshes'] + '/' + obj['name'] + '.egg').find('**/+GeomNode')
-            model = scene.loader.loadModel(path).find('**/+GeomNode')
-            model.reparentTo(scene.static_geom)
-            model.setMat(Mat4(*obj['mat']))
-            scene.temp_static_obj_list[obj['name']] = model
+            single_geom_mode = 'scene_mesh' in scene.data_dict['scene'].keys()
+            if not single_geom_mode:
+                path = os.path.join(scene.path_dict['meshes'], obj['name'])
+                model = scene.loader.loadModel(path).find('**/+GeomNode')
+                model.reparentTo(scene.mesh)
+                model.setMat(Mat4(*obj['mat']))
+                scene.meshes[obj['name']] = model
+            else:
+                scene.meshes[obj['name']] = scene.mesh.find('**/' + obj['name'])
         
         elif obj['type'] == 'LAMP':
             c = obj['lamp_color']
