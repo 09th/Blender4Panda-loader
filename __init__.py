@@ -1,5 +1,5 @@
 # -*- coding: utf_8 -*-
-
+from panda3d.core import Plane, Vec3, Point3
 import json
 from ext import extensions
 
@@ -51,7 +51,30 @@ class Scene():
         self.meshes = {}
         
         self._current_cam_number = 0
-
+        self._level_plane =  Plane(Vec3(0, 0, 1), Point3(0, 0, 0))
+    
+    
+    
+    def get_mouse_level_pos(self, task=None):
+        if base.mouseWatcherNode.hasMouse():
+          mpos = base.mouseWatcherNode.getMouse()
+          pos3d = Point3()
+          nearPoint = Point3()
+          farPoint = Point3()
+          self.show_base.camLens.extrude(mpos, nearPoint, farPoint)
+          #if self.plane.intersectsLine(pos3d,
+          #    render.getRelativePoint(camera, nearPoint),
+          #    render.getRelativePoint(camera, farPoint)):
+          #  print "Mouse ray intersects ground plane at ", pos3d
+          self._level_plane.intersectsLine(pos3d,
+              render.getRelativePoint(self.show_base.camera, nearPoint),
+              render.getRelativePoint(self.show_base.camera, farPoint))
+        if task:
+            self._mouse_hit = pos3d
+            return task.again
+        else:
+            return pos3d
+    
     
     
     def pass_through_ext(self, action):
@@ -105,7 +128,8 @@ class Scene():
                 t_cam = self.cameras.values()[self._current_cam_number]
 
             self.show_base.disableMouse()                
-            self.show_base.camera.setMat(t_cam.getMat())
+            #self.show_base.camera.setMat(t_cam.getMat())
+            self.show_base.camera.reparentTo(t_cam)
             self.show_base.cam.node().setLens(t_cam.node().getLens())
         
     
