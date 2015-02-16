@@ -4,6 +4,17 @@ from panda3d.core import *
 order = 100
 target = 'object'
 
+def get_used_materials(geom_np):
+    materials = []
+    geom_node = geom_np.node()
+    for i, geom in enumerate(geom_node.getGeoms()):
+        use_geom = True
+        gs = geom_node.getGeomState(i)
+        m_att = gs.getAttrib(MaterialAttrib)
+        if m_att: 
+            materials.append(m_att.getMaterial().getName())
+    return materials
+
 def make_bullet_mesh(scene, m_type, geom_np):
     mesh = m_type()
     geom_node = geom_np.node()
@@ -80,12 +91,35 @@ def invoke(scene, obj, action):
 
         if shape:
             node.addShape(shape)
+
+            # Wrong algorithm - use friction from the first material.
+            # Possible I should split physics node to the fiew parts,
+            # based on Materials, at least static geometry
+            #materials = get_used_materials(scene.meshes[obj['name']])
+            #if materials: 
+            #    for mat in scene.data_dict['materials'].values():
+            #        if mat['name'] in materials:
+            #            node.set_friction(mat['phys_friction'])
+            #            break
+            if 'phys_mat_order' in obj and obj['phys_mat_order']:
+                for m_name in obj['phys_mat_order']:
+                    mat = scene.data_dict['materials'][m_name]
+                    if mat['use_physics']:
+                        node.set_friction(mat['phys_friction'])
+                        break
+            else:
+                node.set_friction(1.0)
+            if not obj['phys_deactivation']:
+                node.set_deactivation_enabled(False)
+            if 'phys_friction_coefficients' in obj:
+                node.set_anisotropic_friction(Vec3(*obj['phys_friction_coefficients']))
             np = scene.root.attachNewNode(node)
             mask = BitMask32()
             for i,val in enumerate(obj['phys_collision_mask']):
                 if val: mask.set_bit(i)
             np.set_collide_mask(mask)
             np.setMat(scene.meshes[obj['name']].getMat())
+
             scene.meshes[obj['name']].wrtReparentTo(np)
             scene.phys_world.attachRigidBody(node)
 

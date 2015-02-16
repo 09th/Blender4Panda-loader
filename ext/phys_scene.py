@@ -15,6 +15,10 @@ def update(scene, substeps, tm):
 
 def invoke(scene, data, action):
     if action == 'LOAD':
+        scene.phys_world = BulletWorld()
+        scene.phys_world.setGravity(Vec3(0, 0, -data['phys_gravity']))
+        
+        # --- debug ---
         debugNode = BulletDebugNode('PhysDebug')
         debugNode.showWireframe(True)
         debugNode.showConstraints(True)
@@ -22,8 +26,7 @@ def invoke(scene, data, action):
         debugNode.showNormals(False)
         debugNP = render.attachNewNode(debugNode)
         debugNP.show()
-        
-        scene.phys_world = BulletWorld()
-        scene.phys_world.setGravity(Vec3(0, 0, -data['phys_gravity']))
         scene.phys_world.setDebugNode(debugNode)
+        # --- debug end ---
+        
         taskMgr.add(update, 'physics-update', extraArgs=[scene, data['phys_step_sub'], 1.0/data['phys_fps']])
