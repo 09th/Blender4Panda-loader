@@ -92,27 +92,33 @@ def invoke(scene, obj, action):
         if shape:
             node.addShape(shape)
 
-            # Wrong algorithm - use friction from the first material.
-            # Possible I should split physics node to the fiew parts,
-            # based on Materials, at least static geometry
-            #materials = get_used_materials(scene.meshes[obj['name']])
-            #if materials: 
-            #    for mat in scene.data_dict['materials'].values():
-            #        if mat['name'] in materials:
-            #            node.set_friction(mat['phys_friction'])
-            #            break
-            if 'phys_mat_order' in obj and obj['phys_mat_order']:
+            if 'phys_mat_order' in obj and obj['phys_mat_order'] and not 'phys_collision_bounds' in obj:
                 for m_name in obj['phys_mat_order']:
                     mat = scene.data_dict['materials'][m_name]
                     if mat['use_physics']:
                         node.set_friction(mat['phys_friction'])
+                        node.set_restitution(mat['phys_elasticity'])
                         break
             else:
                 node.set_friction(1.0)
-            if not obj['phys_deactivation']:
+                
+            if obj['phys_deactivation']:
+                scene_data = scene.data_dict['scene']
+                node.set_angular_sleep_threshold(scene_data['phys_deactivation_angular_threshold'])
+                node.set_linear_sleep_threshold(scene_data['phys_deactivation_linear_threshold'])
+                node.set_deactivation_time(scene_data['phys_deactivation_time'])
+                node.set_active(True)
+            else:
                 node.set_deactivation_enabled(False)
+
+
             if 'phys_friction_coefficients' in obj:
                 node.set_anisotropic_friction(Vec3(*obj['phys_friction_coefficients']))
+                
+            node.set_linear_damping(obj['phys_linear_damping'])
+            node.set_angular_damping(obj['phys_angular_damping'])
+            node.set_inertia(0.9)
+            
             np = scene.root.attachNewNode(node)
             mask = BitMask32()
             for i,val in enumerate(obj['phys_collision_mask']):
@@ -122,4 +128,5 @@ def invoke(scene, obj, action):
 
             scene.meshes[obj['name']].wrtReparentTo(np)
             scene.phys_world.attachRigidBody(node)
+            scene.objects[obj['name']] = np
 

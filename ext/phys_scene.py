@@ -29,4 +29,5 @@ def invoke(scene, data, action):
         scene.phys_world.setDebugNode(debugNode)
         # --- debug end ---
         
-        taskMgr.add(update, 'physics-update', extraArgs=[scene, data['phys_step_sub'], 1.0/data['phys_fps']])
+        #taskMgr.add(update, 'physics-update', extraArgs=[scene, data['phys_step_sub'], 1.0/data['phys_fps']])
+        taskMgr.doMethodLater(2, update, 'physics-update', extraArgs=[scene, data['phys_step_sub'], 1.0/data['phys_fps']])
