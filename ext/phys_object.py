@@ -120,13 +120,16 @@ def invoke(scene, obj, action):
             node.set_inertia(0.9)
             
             np = scene.root.attachNewNode(node)
+            
             mask = BitMask32()
             for i,val in enumerate(obj['phys_collision_mask']):
                 if val: mask.set_bit(i)
             np.set_collide_mask(mask)
+            
             np.setMat(scene.meshes[obj['name']].getMat())
 
             scene.meshes[obj['name']].wrtReparentTo(np)
             scene.phys_world.attachRigidBody(node)
+            
             scene.objects[obj['name']] = np
 
