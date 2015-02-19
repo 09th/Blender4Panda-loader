@@ -31,7 +31,7 @@ def make_bullet_mesh(scene, m_type, geom_np):
             mesh.addGeom(geom)
     return mesh
 
-def make_collision_bounds_shape(scene, obj, dynamic=True):
+def make_collision_bounds_shape(scene, obj, dynamic=False):
     shapes_grp2 = {'CYLINDER':BulletCylinderShape, 
                    'CAPSULE':BulletCapsuleShape, 
                    'CONE':BulletConeShape}
