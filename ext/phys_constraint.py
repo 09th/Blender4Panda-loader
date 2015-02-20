@@ -70,11 +70,22 @@ def invoke(scene, obj, action):
                             c.set_limit(*con['angular_limits'][0])
                     elif con['pivot_type'] == 'CONE_TWIST':
                         # Hack while setLimit ( int index, float value ) not worked
-                        t, s1, s2 = [l[1] for l in con['angular_limits']]
-                        if not con['use_angular_limits'][0]: t = 360
-                        if not con['use_angular_limits'][1]: s1 = 360
-                        if not con['use_angular_limits'][2]: s2 = 360
-                        c.set_limit(s1, s2, t)
+                        #t, s1, s2 = [l[1] for l in con['angular_limits']]
+                        #if not con['use_angular_limits'][0]: t = 360
+                        #if not con['use_angular_limits'][1]: s1 = 360
+                        #if not con['use_angular_limits'][2]: s2 = 360
+                        #c.set_limit(s1, s2, t)
+                        for i, a_lim in enumerate(con['use_angular_limits']):
+                            if a_lim:
+                                l_min, l_max = con['angular_limits'][i]
+                                c.set_limit(i+3, l_max)
                         
-
+                    if con['use_linked_collision']:
+                        try:
+                            scene.phys_world.attachConstraint(c, True)
+                        except:
+                            scene.phys_world.attachConstraint(c)
+                            print 'WARNING: Not supported "use_linked_collision" flag.'
+                        return
+                    
                     scene.phys_world.attachConstraint(c)

@@ -31,7 +31,7 @@ def make_bullet_mesh(scene, m_type, geom_np):
             mesh.addGeom(geom)
     return mesh
 
-def make_collision_bounds_shape(scene, obj, dynamic=False):
+def make_collision_bounds_shape(scene, obj, dynamic=True):
     shapes_grp2 = {'CYLINDER':BulletCylinderShape, 
                    'CAPSULE':BulletCapsuleShape, 
                    'CONE':BulletConeShape}
@@ -92,7 +92,7 @@ def invoke(scene, obj, action):
         if shape:
             node.addShape(shape)
 
-            if 'phys_mat_order' in obj and obj['phys_mat_order'] and not 'phys_collision_bounds' in obj:
+            if 'phys_mat_order' in obj and obj['phys_mat_order']:# and not 'phys_collision_bounds' in obj:
                 for m_name in obj['phys_mat_order']:
                     mat = scene.data_dict['materials'][m_name]
                     if mat['use_physics']:
@@ -101,7 +101,8 @@ def invoke(scene, obj, action):
                         break
             else:
                 node.set_friction(1.0)
-                
+            
+            # Sleepeng (deactivation) options
             if obj['phys_deactivation']:
                 scene_data = scene.data_dict['scene']
                 node.set_angular_sleep_threshold(scene_data['phys_deactivation_angular_threshold'])
@@ -114,10 +115,19 @@ def invoke(scene, obj, action):
 
             if 'phys_friction_coefficients' in obj:
                 node.set_anisotropic_friction(Vec3(*obj['phys_friction_coefficients']))
-                
+            
+            # Linear and angular damping
             node.set_linear_damping(obj['phys_linear_damping'])
             node.set_angular_damping(obj['phys_angular_damping'])
-            node.set_inertia(0.9)
+            #node.set_inertia(0.9)
+            
+            # Linear and angular locking
+            if True in obj['phys_lock_location']:
+                v = Vec3(*map(int, obj['phys_lock_location']))
+                node.set_linear_factor(v)
+            if True in obj['phys_lock_rotation']:
+                v = Vec3(*map(int, obj['phys_lock_rotation']))
+                node.set_angular_factor(v)
             
             np = scene.root.attachNewNode(node)
             
