@@ -67,7 +67,7 @@ def invoke(scene, obj, action):
                 lens.setFov(math.degrees(obj['fov']))
             else:
                 #print('Unsupported light %s: %s' % (obj['name'], obj['lamp_type']))
-                print('WARNING: light %s: %s not supported by Panda. Use with Blender shaders only.' % (obj['name'], obj['lamp_type']))
+                print('INFORMATION: light %s: %s not supported by Panda. Use with Blender shaders only.' % (obj['name'], obj['lamp_type']))
                 supported = False
             if supported:
                 light.setColor(VBase4(c[0], c[1], c[2], 1))

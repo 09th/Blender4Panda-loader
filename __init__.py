@@ -49,7 +49,10 @@ class Scene():
         self.cameras = {}
         self.textures = {}
         self.meshes = {}
+        # Container for different options which can be used by extensions
+        self.flags = {}
         
+        # Builtin variables
         self._current_cam_number = 0
         self._level_plane =  Plane(Vec3(0, 0, 1), Point3(0, 0, 0))
     

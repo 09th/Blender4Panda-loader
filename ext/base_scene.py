@@ -6,6 +6,16 @@ target = 'scene'
 description = 'Base scene import'
 author = '09th'
 
+def linearrgb_to_srgb(col):
+    # Function ported from standard Blender shader
+    new_col = []
+    for c in col:
+        if c < 0.0031308:
+            new_col.append(max(0, c * 12.92))
+        else:
+            new_col.append(1.055 * pow(c, 1.0/2.4) - 0.055);
+    return new_col
+
 def invoke(scene, data, action):
     if action == 'LOAD':
         scene_path = os.path.dirname(scene.jsd_file)
@@ -22,3 +32,7 @@ def invoke(scene, data, action):
         else:
             scene.mesh = NodePath('scene_mesh')
             scene.mesh.reparentTo(scene.root)
+        if 'horizon_color' in data:
+            r,g,b = linearrgb_to_srgb(data['horizon_color'])
+            #r,g,b = data['horizon_color']
+            scene.show_base.win.setClearColor((r, g, b, 1))

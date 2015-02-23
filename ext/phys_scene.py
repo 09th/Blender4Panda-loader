@@ -18,16 +18,17 @@ def invoke(scene, data, action):
         scene.phys_world = BulletWorld()
         scene.phys_world.setGravity(Vec3(0, 0, -data['phys_gravity']))
         
-        # --- debug ---
-        debugNode = BulletDebugNode('PhysDebug')
-        debugNode.showWireframe(True)
-        debugNode.showConstraints(True)
-        debugNode.showBoundingBoxes(False)
-        debugNode.showNormals(False)
-        debugNP = render.attachNewNode(debugNode)
-        debugNP.show()
-        scene.phys_world.setDebugNode(debugNode)
-        # --- debug end ---
+        if 'bullet_debug' in scene.flags and scene.flags['bullet_debug']:
+            # --- debug ---
+            debugNode = BulletDebugNode('PhysDebug')
+            debugNode.showWireframe(True)
+            debugNode.showConstraints(True)
+            debugNode.showBoundingBoxes(False)
+            debugNode.showNormals(False)
+            debugNP = render.attachNewNode(debugNode)
+            debugNP.show()
+            scene.phys_world.setDebugNode(debugNode)
+            # --- debug end ---
         
         #taskMgr.add(update, 'physics-update', extraArgs=[scene, data['phys_step_sub'], 1.0/data['phys_fps']])
         taskMgr.doMethodLater(2, update, 'physics-update', extraArgs=[scene, data['phys_step_sub'], 1.0/data['phys_fps']])
