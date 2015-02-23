@@ -316,7 +316,30 @@ def sampler_2dimage(scene, unf):
     if unf['image'] not in scene.textures:
         texture = scene.loader.loadTexture(os.path.join(scene.path_dict['images'], unf['image']))
         scene.textures[unf['image']] = texture
-    return texture
+    return scene.textures[unf['image']]
+
+def sampler_cube_image(scene, unf):
+    if unf['image'] not in scene.textures:
+        tex = Texture('cubemap')
+        tex.setupCubeMap()
+        orig_image = PNMImage()
+        orig_image.read('res/tex/env_test.png')
+        sz = orig_image.get_y_size() / 2
+        coords = [(2,0,(1,0,1)),
+                  (0,0,(0,1,1)),
+                  (2,1,(0,0,0)),
+                  (1,0,(1,1,0)),
+                  (1,1,(0,0,0)),
+                  (0,1,(1,1,0))]
+        for i, co in enumerate(coords):
+            image = PNMImage(sz, sz)
+
+            image.copy_sub_image(orig_image, 0, 0, sz * co[0], sz * co[1])
+            image.flip(*co[2])
+
+            tex.load(image, i, 0)
+        scene.textures[unf['image']] = texture
+    scene.textures[unf['image']]
 
 def sampler_2dshadow(scene, unf):
     # type 14
