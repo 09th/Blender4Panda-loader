@@ -319,11 +319,12 @@ def sampler_2dimage(scene, unf):
     return scene.textures[unf['image']]
 
 def sampler_cube_image(scene, unf):
-    if unf['image'] not in scene.textures:
+    if unf['varname'] not in scene.textures:
         tex = Texture('cubemap')
         tex.setupCubeMap()
         orig_image = PNMImage()
-        orig_image.read('res/tex/env_test.png')
+        img_fname = os.path.join(scene.path_dict['images'], unf['image'])
+        orig_image.read(img_fname)
         sz = orig_image.get_y_size() / 2
         coords = [(2,0,(1,0,1)),
                   (0,0,(0,1,1)),
@@ -338,8 +339,23 @@ def sampler_cube_image(scene, unf):
             image.flip(*co[2])
 
             tex.load(image, i, 0)
-        scene.textures[unf['image']] = texture
-    scene.textures[unf['image']]
+        scene.textures[unf['varname']] = tex
+    return scene.textures[unf['varname']]
+
+def sampler_cube_dynamic(scene, unf):
+    if unf['varname'] not in scene.textures:
+        rig = NodePath('rig')
+        rig.reparent_to(scene.meshes[unf['object']])
+        #cube_buffer = scene.show_base.win.makeCubeMap(unf['varname'], unf['resolution'], rig)
+        resolution = 2 ** int(math.log(unf['resolution'], 2))
+        if resolution != unf['resolution']:
+            print 'WARNING:SHADER: set cubemap resolution from %i to %i' % (unf['resolution'], resolution)
+        cube_buffer = scene.show_base.win.makeCubeMap(unf['varname'], resolution, rig)
+        tex = cube_buffer.getTexture()
+        scene.textures[unf['varname']] = tex
+        for camera in rig.findAllMatches('**/+Camera'):
+            camera.node().getLens().setNearFar(0.1, 10)
+    return scene.textures[unf['varname']]
 
 def sampler_2dshadow(scene, unf):
     # type 14
@@ -395,6 +411,8 @@ def get_uniform(scene, unf):
                 #19: spot_params,
                 'spot_cutoff': spot_params,
                 'spot_blend': spot_params,
+                'image_cubemap': sampler_cube_image,
+                'dynamic_cubemap': sampler_cube_dynamic,
                 'unsupported': unknown_data
                 }
     try:
@@ -405,7 +423,7 @@ def get_uniform(scene, unf):
             val = unf_type[unf['type']](scene, unf)
         else:
             val = unf_type['unsupported'](scene, unf)
-        if unf['type'] in (12, 13, 14): 
+        if unf['type'] in (12, 13, 14, 'image_cubemap', 'static_cubemap', 'dynamic_cubemap'): 
             # For textures Blender by some reason sets type to int 
             # we need to avoid this
             return name, val
