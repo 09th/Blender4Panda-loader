@@ -373,6 +373,9 @@ def lamp_distance(scene, unf):
 def spot_params(scene, unf):
     return unf['value'] # temporary
 
+def simple_value(scene, unf):
+    return unf['value']
+
 def unknown_data(scene, unf):
     print('WARNING: unsupported uniform', unf)
     return 1
@@ -413,6 +416,7 @@ def get_uniform(scene, unf):
                 'spot_blend': spot_params,
                 'image_cubemap': sampler_cube_image,
                 'dynamic_cubemap': sampler_cube_dynamic,
+                'simple_value': simple_value,
                 'unsupported': unknown_data
                 }
     try:
@@ -421,6 +425,8 @@ def get_uniform(scene, unf):
         glsl_type = unf_datatype[unf['datatype']]
         if unf['type'] in unf_type:
             val = unf_type[unf['type']](scene, unf)
+        elif 'value' in unf:
+            val = unf_type['simple_value'](scene, unf)
         else:
             val = unf_type['unsupported'](scene, unf)
         if unf['type'] in (12, 13, 14, 'image_cubemap', 'static_cubemap', 'dynamic_cubemap'): 
