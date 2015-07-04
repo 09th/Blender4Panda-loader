@@ -143,3 +143,5 @@ def invoke(scene, obj, action):
             
             scene.objects[obj['name']] = np
 
+        if obj['invisible']:
+            scene.meshes[obj['name']].hide()
